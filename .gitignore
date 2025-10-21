@@ -8,6 +8,7 @@ bin/spearlet
 sdk/python/dist
 __pycache__
 sdk/python/pyproject.toml
+pkg/spear/
 
 # Coverage files / 覆盖率文件
 *.profraw
