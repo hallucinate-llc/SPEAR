@@ -45,14 +45,14 @@ install_sdk: build
 
 spearlet: pkg/spear
 	mkdir -p $(OUTPUT_DIR)
-	go build -o $(OUTPUT_DIR)/spearlet \\
-	-ldflags "-X 'github.com/lfedgeai/spear/pkg/common.Version=$(VERSION)'" \\
+	go build -o $(OUTPUT_DIR)/spearlet \
+	-ldflags "-X 'github.com/lfedgeai/spear/pkg/common.Version=$(VERSION)'" \
 	$(REPO_ROOT)/cmd/spearlet/main.go
 
 spearlet-linux-arm64: pkg/spear
 	mkdir -p $(OUTPUT_DIR)/linux-arm64
-	GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build -o $(OUTPUT_DIR)/linux-arm64/spearlet \\
-	-ldflags "-X 'github.com/lfedgeai/spear/pkg/common.Version=$(VERSION)'" \\
+	GOOS=linux GOARCH=arm64 CGO_ENABLED=1 go build -o $(OUTPUT_DIR)/linux-arm64/spearlet \
+	-ldflags "-X 'github.com/lfedgeai/spear/pkg/common.Version=$(VERSION)'" \
 	$(REPO_ROOT)/cmd/spearlet/main.go
 
 test: workload build install_sdk
@@ -63,9 +63,9 @@ test: workload build install_sdk
 	done
 
 workload: build
-	@set -e; \\
-	for dir in $(WORKLOAD_SUBDIRS); do \\
-		$(MAKE) -C $$dir PLATFORM=$(WORKLOAD_PLATFORM); \\
+	@set -e; \
+	for dir in $(WORKLOAD_SUBDIRS); do \
+		$(MAKE) -C $$dir PLATFORM=$(WORKLOAD_PLATFORM); \
 	done
 
 workload-linux-arm64:
