@@ -1,0 +1,43 @@
+# Dockerfile for SPEAR - Distributed AI Agent Platform
+FROM golang:1.21-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git make gcc musl-dev flatbuffers-dev
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN make clean && make build
+
+# Final stage
+FROM alpine:3.18
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    ca-certificates \
+    docker-cli \
+    curl \
+    bash
+
+# Create app user
+RUN adduser -D -s /bin/bash spear
+
+WORKDIR /app
+COPY --from=builder /app/bin/ ./bin/
+COPY --from=builder /app/config/ ./config/
+COPY --chown=spear:spear --from=builder /app/workload/ ./workload/
+
+# Create necessary directories
+RUN mkdir -p data logs && chown -R spear:spear /app
+
+USER spear
+
+EXPOSE 8100-8150 9090
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:9090/health || exit 1
+
+CMD ["./bin/spearlet", "--config", "config/spearlet.yaml"]
